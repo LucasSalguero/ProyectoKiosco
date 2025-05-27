@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ProyectoKiosco.BD\ProyectoKiosco.BD.csproj" />
+    <ProjectReference Include="..\..\ProyectoKiosco.Repositorio\ProyectoKiosco.Repositorio.csproj" />
+    <ProjectReference Include="..\..\ProyectoKiosco.Shared\ProyectoKiosco.Shared.csproj" />
+    <ProjectReference Include="..\ProyectoKiosco.Server.Client\ProyectoKiosco.Server.Client.csproj" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.4" />
+  </ItemGroup>
+
+</Project>

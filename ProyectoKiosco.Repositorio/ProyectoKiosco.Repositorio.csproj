@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ProyectoKiosco.BD\ProyectoKiosco.BD.csproj" />
+    <ProjectReference Include="..\ProyectoKiosco.Shared\ProyectoKiosco.Shared.csproj" />
+  </ItemGroup>
+
+</Project>
