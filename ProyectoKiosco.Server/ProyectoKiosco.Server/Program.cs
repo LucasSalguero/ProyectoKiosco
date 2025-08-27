@@ -6,6 +6,14 @@ using ProyectoKiosco.Server.Components;
 
 // configura el constructor de la app
 var builder = WebApplication.CreateBuilder(args);
+#region configurar el constructor de la aplicacion y los servicios
+
+builder.Services.AddControllers();
+
+builder.Services.AddSwaggerGen();
+
+
+// cadena de conexion con la base de datos
 var connectionString = builder.Configuration.GetConnectionString("ConnSqlServer")
                         ?? throw new InvalidOperationException(
                             "La conexion no existe");
@@ -17,13 +25,17 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
+#endregion
 // Contruccion de la app
 var app = builder.Build();
+#region Construccion la aplicacion
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseWebAssemblyDebugging();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 else
 {
@@ -43,4 +55,6 @@ app.MapRazorComponents<App>()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(ProyectoKiosco.Server.Client._Imports).Assembly);
 
+app.MapControllers();
+#endregion
 app.Run();
