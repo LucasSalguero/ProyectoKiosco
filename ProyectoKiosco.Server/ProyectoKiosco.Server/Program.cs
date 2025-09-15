@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using ProyectoKiosco.BD.Datos;
+using ProyectoKiosco.BD.Datos.Entity;
+using ProyectoKiosco.Repositorio.Repositorios;
 using ProyectoKiosco.Server.Client.Pages;
 using ProyectoKiosco.Server.Components;
 
@@ -19,6 +21,8 @@ var connectionString = builder.Configuration.GetConnectionString("ConnSqlServer"
                             "La conexion no existe");
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
+
+builder.Services.AddScoped<IRepositorio<Producto>, Repositorio<Producto>>();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()

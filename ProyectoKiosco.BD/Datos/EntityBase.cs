@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ProyectoKiosco.BD.Datos
 {
-    public class EntityBase
+    public class EntityBase : IEntityBase
     {
         public int Id { get; set; }
 

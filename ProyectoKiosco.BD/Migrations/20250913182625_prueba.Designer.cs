@@ -12,15 +12,15 @@ using ProyectoKiosco.BD.Datos;
 namespace ProyectoKiosco.BD.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250622220342_Caja01")]
-    partial class Caja01
+    [Migration("20250913182625_prueba")]
+    partial class prueba
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.6")
+                .HasAnnotation("ProductVersion", "9.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -79,6 +79,11 @@ namespace ProyectoKiosco.BD.Migrations
                     b.Property<int>("Cantidad")
                         .HasColumnType("int");
 
+                    b.Property<string>("CodigoProducto")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<string>("Descripcion")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -88,7 +93,7 @@ namespace ProyectoKiosco.BD.Migrations
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Observacion")
                         .IsRequired()
@@ -99,7 +104,7 @@ namespace ProyectoKiosco.BD.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex(new[] { "Nombre" }, "Producto_Nombre_UQ")
+                    b.HasIndex(new[] { "CodigoProducto" }, "Producto_Codigo_UQ")
                         .IsUnique();
 
                     b.ToTable("Productos");
@@ -124,7 +129,7 @@ namespace ProyectoKiosco.BD.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("EsAdmin")
                         .HasColumnType("bit");
@@ -145,7 +150,77 @@ namespace ProyectoKiosco.BD.Migrations
                     b.HasIndex(new[] { "DNI" }, "Usuario_DNI_UQ")
                         .IsUnique();
 
+                    b.HasIndex(new[] { "Email" }, "Usuario_Email_UQ")
+                        .IsUnique();
+
                     b.ToTable("Usuarios");
+                });
+
+            modelBuilder.Entity("ProyectoKiosco.BD.Datos.Entity.Venta", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("EstadoRegistro")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Fecha_hora")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Monto")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<string>("Observacion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UsuarioId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UsuarioId");
+
+                    b.ToTable("Ventas");
+                });
+
+            modelBuilder.Entity("ProyectoKiosco.BD.Datos.Entity.Venta_Detalle", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Cantidad_vendida")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EstadoRegistro")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Observacion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Precio_unitario")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<int>("ProductoId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("VentaId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductoId");
+
+                    b.HasIndex("VentaId");
+
+                    b.ToTable("Ventas_Detalles");
                 });
 
             modelBuilder.Entity("ProyectoKiosco.BD.Datos.Entity.Caja", b =>
@@ -157,6 +232,36 @@ namespace ProyectoKiosco.BD.Migrations
                         .IsRequired();
 
                     b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("ProyectoKiosco.BD.Datos.Entity.Venta", b =>
+                {
+                    b.HasOne("ProyectoKiosco.BD.Datos.Entity.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("ProyectoKiosco.BD.Datos.Entity.Venta_Detalle", b =>
+                {
+                    b.HasOne("ProyectoKiosco.BD.Datos.Entity.Producto", "Producto")
+                        .WithMany()
+                        .HasForeignKey("ProductoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ProyectoKiosco.BD.Datos.Entity.Venta", "Venta")
+                        .WithMany()
+                        .HasForeignKey("VentaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Producto");
+
+                    b.Navigation("Venta");
                 });
 #pragma warning restore 612, 618
         }

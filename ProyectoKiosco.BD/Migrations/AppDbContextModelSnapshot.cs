@@ -17,7 +17,7 @@ namespace ProyectoKiosco.BD.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.6")
+                .HasAnnotation("ProductVersion", "9.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -76,6 +76,11 @@ namespace ProyectoKiosco.BD.Migrations
                     b.Property<int>("Cantidad")
                         .HasColumnType("int");
 
+                    b.Property<string>("CodigoProducto")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<string>("Descripcion")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -85,7 +90,7 @@ namespace ProyectoKiosco.BD.Migrations
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Observacion")
                         .IsRequired()
@@ -96,7 +101,7 @@ namespace ProyectoKiosco.BD.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex(new[] { "Nombre" }, "Producto_Nombre_UQ")
+                    b.HasIndex(new[] { "CodigoProducto" }, "Producto_Codigo_UQ")
                         .IsUnique();
 
                     b.ToTable("Productos");
