@@ -1,62 +1,84 @@
 ﻿@page "/listaproducto"
 @inject IHttpServicio Http
-<h3>Lista de Producto</h3>
-<br />
-<a class="btn btn-primary" href="/listaproducto/crearproducto">Nuevo producto</a>
-
-<table>
-    <tr>
-        <th> Productos</th>
-    </tr>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Lista de Productos</h2>
+        <a class="btn btn-primary shadow-sm px-3" href="/listaproducto/crearproducto">
+            <i class="bi bi-plus-circle me-1"></i> Nuevo producto
+        </a>
+    </div>
 
     @if (productoEditando != null)
-{
-    <EditarProducto
-        ProductoId="productoEditando.Id"
-        PrecioActual="productoEditando.Precio"
-        OnGuardado="LeerProductos"
-        OnCancelado="CancelarEdicion" />
-}
-
+    {
+        <EditarProducto ProductoId="productoEditando.Id"
+                        PrecioActual="productoEditando.Precio"
+                        OnGuardado="LeerProductos"
+                        OnCancelado="CancelarEdicion" />
+    }
 
     @if (productos == null)
     {
-        <p>Buscando...</p>
+        <div class="alert alert-secondary text-center shadow-sm">
+            Buscando productos...
+        </div>
     }
     else if (productos.Count == 0)
     {
-        <p>No existen productos cargados en esta lista</p>
+        <div class="alert alert-info text-center shadow-sm">
+            No existen productos cargados en esta lista.
+        </div>
     }
     else
     {
-        @foreach (var producto in productos)
-        {
-            <tr>
-                <td>@producto.Nombre</td>
-                <td>@producto.Precio</td>
-                <td>
-                    <button class="btn btn-primary" @onclick="() => Editar(producto)">Editar</button>
-                </td>
-                <td>
-                    <button class="btn btn-danger" @onclick="() => Eliminar(producto)">
-                       Eliminar
-
-                    </button>
-                </td>
-            </tr>
-        }
+        <div class="card shadow-sm border-0 rounded-3">
+            <div class="card-body p-0">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Producto</th>
+                            <th>Precio</th>
+                            <th class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var producto in productos)
+                        {
+                            <tr>
+                                <td class="fw-semibold">@producto.Nombre</td>
+                                <td>$@producto.Precio.ToString("N2")</td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-outline-primary me-2"
+                                            @onclick="() => Editar(producto)">
+                                        <i class="bi bi-pencil-square"></i> Editar
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger"
+                                            @onclick="() => Eliminar(producto)">
+                                        <i class="bi bi-trash"></i> Eliminar
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
     }
-</table>
-<br />
-<p>@Mensaje</p>
-<br />
-<Confirmacion @ref="confirmacion" Titulo="Cuidado" textOk="Aceptar" textCancelar="No borrar" onConfirm="Borrar" onCancel="Cancelar">
-    <p>Esta por borrar u producto</p>
+
     <br />
-    <p>¿Esta seguro?</p>
+    <p class="text-muted">@Mensaje</p>
 
-</Confirmacion>
-
+    <Confirmacion @ref="confirmacion"
+                  Titulo="Cuidado"
+                  textOk="Aceptar"
+                  textCancelar="No borrar"
+                  onConfirm="Borrar"
+                  onCancel="Cancelar">
+        <div class="text-center">
+            <p class="mb-2">Está por borrar un producto.</p>
+            <p>¿Está seguro?</p>
+        </div>
+    </Confirmacion>
+</div>
 @code {
     List<ProductoListadoDTO>? productos;
     string Mensaje = "";
