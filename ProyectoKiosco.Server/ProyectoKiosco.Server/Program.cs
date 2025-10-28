@@ -28,6 +28,10 @@ builder.Services.AddScoped<IRepositorio<Producto>, Repositorio<Producto>>();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
+builder.Services.AddServerSideBlazor()
+      .AddCircuitOptions(options => { options.DetailedErrors = true; });
+
+
 
 #endregion
 // Contruccion de la app

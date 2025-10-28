@@ -61,6 +61,16 @@ namespace ProyectoKiosco.Repositorio.Repositorios
             catch (Exception) { throw; }
         }
 
+        public async Task<bool> UpdatePrecio(int id, decimal nuevoPrecio)
+        {
+            var producto = await context.Productos.FindAsync(id);
+            if(producto == null)
+                return false;
+            producto.Precio = nuevoPrecio;
+            await context.SaveChangesAsync();
+            return true;
+        }
+
         public async Task<bool> Delete(int id)
         {
             var entity = await SelectById(id);

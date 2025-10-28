@@ -3,11 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using ProyectoKiosco.BD.Datos;
 using ProyectoKiosco.BD.Datos.Entity;
 using ProyectoKiosco.Repositorio.Repositorios;
+using ProyectoKiosco.Shared.DTO;
 
 namespace ProyectoKiosco.Server.Controllers
 {
     [ApiController]
-    [Route("api/Producto")]
+    [Route("api/producto")]
     public class ProductoController : ControllerBase
     {
         private readonly AppDbContext context;
@@ -18,8 +19,8 @@ namespace ProyectoKiosco.Server.Controllers
             this.context = context;
             this.repositorio = repositorio;
         }
-        [HttpGet]
-        public async Task<ActionResult<List<Producto>>> GetProductoController()
+        [HttpGet("listaproducto")] //api/producto/listaproducto
+        public async Task<ActionResult<List<ProductoListadoDTO>>> GetProductoController()
         {
             var producto = await repositorio.Select();
             if (producto == null)
@@ -46,13 +47,21 @@ namespace ProyectoKiosco.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<int>> Post(Producto DTO)
+        public async Task<ActionResult<int>> Post(ProductoDTO DTO)
         {
             try
             {
-                await repositorio.Insert(DTO);
+                var producto = new Producto
+                {
+                    CodigoProducto = DTO.CodigoProducto,
+                    Nombre = DTO.Nombre,
+                    Cantidad = DTO.Cantidad,
+                    Descripcion = DTO.Descripcion,
+                    Precio = DTO.Precio
+                };
+                await repositorio.Insert(producto);
                 await context.SaveChangesAsync();
-                return Ok(DTO.Id);
+                return Ok(producto.Id);
 
             }
             catch (Exception e)
@@ -75,15 +84,43 @@ namespace ProyectoKiosco.Server.Controllers
 
         }
 
+        [HttpPut("{id:int}/cambiarPrecio")] //api/producto/2/cambiarPrecio
+        public async Task<IActionResult> CambiarPrecio(int id, ProductoCambiarPrecioDTO dto)
+        {
+            // Validar que el id coincida con el del DTO
+            if (id != dto.Id)
+            {
+                return BadRequest("El id de la URL no coincide con el del cuerpo de la solicitud.");
+            }
+
+            // Llamar al repositorio
+            var resultado = await repositorio.UpdatePrecio(dto.Id, dto.NuevoPrecio);
+
+            // Si el producto no existe
+            if (!resultado)
+            {
+                return NotFound(new { mensaje = $"No existe el producto con id {dto.Id}." });
+            }
+
+            // Devuelve JSON en vez de solo texto
+            return Ok(new
+            {
+                mensaje = $"El producto con id {dto.Id} ha sido actualizado correctamente.",
+                id = dto.Id,
+                nuevoPrecio = dto.NuevoPrecio
+            });
+        }
+
+
         [HttpDelete("{id:int}")]
         public async Task<ActionResult> Delete(int id)
         {
-            var producto = await context.Productos.FirstOrDefaultAsync(x  => x.Id == id); ;
-            if (producto is null)
+            var entidad = await context.Productos.FirstOrDefaultAsync(x  => x.Id == id); ;
+            if (entidad is null)
             {
                 return NotFound($"No existe el registro con el id: {id}.");
             }
-            context.Productos.Remove(producto);
+            context.Productos.Remove(entidad);
             await context.SaveChangesAsync();
             return Ok($"Producto con el id: {id} eliminado correctamente");
 

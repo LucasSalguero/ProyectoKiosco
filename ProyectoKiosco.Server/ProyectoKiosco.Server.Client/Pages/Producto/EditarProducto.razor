@@ -1,0 +1,57 @@
+﻿@inject IHttpServicio Http
+
+<h3>Editar Precio</h3>
+
+
+<div class="card p-3 mt-3">
+    <h5>Editar precio</h5>
+
+    <div class="mb-3">
+        <label>Nuevo precio:</label>
+        <InputNumber @bind-Value="NuevoPrecio" class="form-control" />
+    </div>
+
+    <div>
+        <button class="btn btn-success me-2" @onclick="GuardarCambios">Guardar</button>
+        <button class="btn btn-secondary" @onclick="Cancelar">Cancelar</button>
+    </div>
+</div>
+
+@code {
+    [Parameter] public int ProductoId { get; set; }
+    [Parameter] public decimal PrecioActual { get; set; }
+    [Parameter] public EventCallback OnGuardado { get; set; }
+    [Parameter] public EventCallback OnCancelado { get; set; }
+
+    private decimal NuevoPrecio;
+
+    protected override void OnInitialized()
+    {
+        NuevoPrecio = PrecioActual;
+    }
+
+    private async Task GuardarCambios()
+    {        
+        var dto = new ProductoCambiarPrecioDTO
+        {
+            Id = ProductoId,
+            NuevoPrecio = NuevoPrecio
+        };
+        
+        var respuesta = await Http.Put<ProductoCambiarPrecioDTO, object>($"api/producto/{ProductoId}/cambiarprecio", dto);
+
+        if (!respuesta.Error)
+        {
+            await OnGuardado.InvokeAsync();
+        }
+        else
+        {
+            Console.WriteLine("Error al actualizar precio");
+        }
+    }
+
+    private async Task Cancelar()
+    {
+        await OnCancelado.InvokeAsync();
+    }
+}

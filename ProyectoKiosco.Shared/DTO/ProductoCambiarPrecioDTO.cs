@@ -10,5 +10,6 @@ namespace ProyectoKiosco.Shared.DTO
     {
         public int Id { get; set; }
         public decimal NuevoPrecio { get; set; }
+
     }
 }

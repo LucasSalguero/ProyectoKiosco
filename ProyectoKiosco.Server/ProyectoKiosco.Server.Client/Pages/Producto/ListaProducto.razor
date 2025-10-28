@@ -1,0 +1,142 @@
+﻿@page "/listaproducto"
+@inject IHttpServicio Http
+<h3>Lista de Producto</h3>
+<br />
+<a class="btn btn-primary" href="/listaproducto/crearproducto">Nuevo producto</a>
+
+<table>
+    <tr>
+        <th> Productos</th>
+    </tr>
+
+    @if (productoEditando != null)
+{
+    <EditarProducto
+        ProductoId="productoEditando.Id"
+        PrecioActual="productoEditando.Precio"
+        OnGuardado="LeerProductos"
+        OnCancelado="CancelarEdicion" />
+}
+
+
+    @if (productos == null)
+    {
+        <p>Buscando...</p>
+    }
+    else if (productos.Count == 0)
+    {
+        <p>No existen productos cargados en esta lista</p>
+    }
+    else
+    {
+        @foreach (var producto in productos)
+        {
+            <tr>
+                <td>@producto.Nombre</td>
+                <td>@producto.Precio</td>
+                <td>
+                    <button class="btn btn-primary" @onclick="() => Editar(producto)">Editar</button>
+                </td>
+                <td>
+                    <button class="btn btn-danger" @onclick="() => Eliminar(producto)">
+                       Eliminar
+
+                    </button>
+                </td>
+            </tr>
+        }
+    }
+</table>
+<br />
+<p>@Mensaje</p>
+<br />
+<Confirmacion @ref="confirmacion" Titulo="Cuidado" textOk="Aceptar" textCancelar="No borrar" onConfirm="Borrar" onCancel="Cancelar">
+    <p>Esta por borrar u producto</p>
+    <br />
+    <p>¿Esta seguro?</p>
+
+</Confirmacion>
+
+@code {
+    List<ProductoListadoDTO>? productos;
+    string Mensaje = "";
+    Confirmacion confirmacion;
+    ProductoListadoDTO productoSeleccionado = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await LeerProductos();
+    }
+
+    private async Task LeerProductos()
+    {
+        productoEditando = null;
+        var resp = await Http.Get<List<ProductoListadoDTO>>("api/producto/listaproducto");
+        // productos = await Http.GetFromJsonAsync<List<ProductoListadoDTO>>("api/producto/listaproducto");
+
+        if (!resp.Error)
+        {
+            productos = resp.Respuesta;
+        }
+        else
+        {
+            Mensaje = resp.ObtenerError();
+        }
+            
+    }
+
+    private async Task Borrar()
+    {
+        var resp = await Http.Delete($"api/producto/{productoSeleccionado.Id}");
+        if (!resp.Error)
+        {
+            await LeerProductos();
+        }
+        else
+        {
+            Mensaje = resp.ObtenerError();
+        }
+        productoSeleccionado = null;
+        confirmacion.Ocultar();
+        await LeerProductos();
+    }
+    
+    private async Task Eliminar(ProductoListadoDTO producto)
+    {
+        productoSeleccionado = producto;
+        confirmacion.Ver();
+    }
+
+    private void Cancelar()
+    {
+        confirmacion.Ocultar();
+        productoSeleccionado = null;
+
+    }
+
+    private ProductoListadoDTO productoEditando;
+
+    private void Editar(ProductoListadoDTO p)
+    {
+        productoEditando = p;
+    }
+
+    // private async Task RefrescarLista()
+    // {
+    //     productoEditando = null;
+    //     var resp = await Http.Get<List<ProductoListadoDTO>>("api/producto/listaproducto");
+    //     if (!resp.Error)
+    //     {
+    //         productos = resp.Respuesta;
+    //     }
+    // }
+
+    private void CancelarEdicion()
+    {
+        productoEditando = null;
+    }
+
+
+
+}

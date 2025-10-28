@@ -9,5 +9,6 @@ namespace ProyectoKiosco.Repositorio.Repositorios
         Task<List<E>> Select();
         Task<E?> SelectById(int id);
         Task<bool> Update(int id, E entity);
+        Task<bool> UpdatePrecio(int id, decimal nuevoPrecio);
     }
 }
